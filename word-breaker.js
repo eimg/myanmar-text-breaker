@@ -7,27 +7,47 @@ var common_words = fs.readFileSync("./common-words.txt", "utf8").split("\n");
 
 module.exports = function(input) {
     input = input.replace(/\s/g, '').trim();
+
+    // Breaking up words to syllable
     input = syllable(input);
 
     var result = [];
-    var word = "";
-    var swap = "";
+    var offset = 0;
 
-    for(var i = 0; i < input.length; i++) {
-        swap = word;
-        word += input[i];
+    // Max limit of syllable in each word
+    var LIMIT = 6;
 
-        if(! dict_words.includes(word) &&
-           ! common_words.includes(word) &&
-           ! stop_words.includes(word)) {
+    while(offset < input.length) {
+        var chunk_end = offset + LIMIT;
+        var chunk_found = false;
 
-            result.push(swap);
-            word = input[i];
-            swap = "";
+        // Breakning down a chunk of syllable from input, then
+        // checking backward from longest to shortest
+        for(var i = chunk_end; i > offset; i--) {
+            var chunk = input.slice(offset, i).join('');
+
+            if(dict_words.includes(chunk)
+                || common_words.includes(chunk)
+                || stop_words.includes(chunk)) {
+
+                // Found the word in data
+                chunk_found = true;
+                result.push(chunk);
+
+                // Resetting offset to resume
+                offset = i;
+                break;
+            }
+        }
+
+        // Didn't found the word of any
+        // long-short combination in the chunk
+        if(!chunk_found) {
+            // Now, the current syllable is a word
+            result.push( input[offset] );
+            offset++;
         }
     }
-
-    result.push(word);
 
     return result;
 }
