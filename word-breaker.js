@@ -1,9 +1,8 @@
-var fs = require("fs");
 var syllable = require("./syllable-breaker");
 
-var dict_words = fs.readFileSync("./dict-words.txt", "utf8").split("\n");
-var stop_words = fs.readFileSync("./stop-words.txt", "utf8").split("\n");
-var common_words = fs.readFileSync("./common-words.txt", "utf8").split("\n");
+var dict_words = require('./dict-words').split("\n");
+var stop_words = require("./stop-words").split("\n");
+var common_words = require("./common-words").split("\n");
 
 module.exports = function(input) {
     input = input.replace(/\s/g, '').trim();
